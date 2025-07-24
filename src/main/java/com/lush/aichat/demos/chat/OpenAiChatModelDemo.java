@@ -53,7 +53,4 @@ public class OpenAiChatModelDemo {
         String answer = model.chat(question);
         System.out.println(answer);
     }
-
-
-
 }

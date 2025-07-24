@@ -2,7 +2,9 @@ package com.lush.aichat.controller;
 
 
 import cn.hutool.json.JSONUtil;
-import com.lush.aichat.aiservice.Assistant;
+import com.lush.aichat.aiservice.GoogleAiAssistant;
+import com.lush.aichat.aiservice.GoogleAiStreamAssistant;
+import com.lush.aichat.aiservice.OpenAiAssistant;
 import dev.langchain4j.model.output.FinishReason;
 import dev.langchain4j.model.output.TokenUsage;
 import dev.langchain4j.rag.content.Content;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -24,7 +27,11 @@ import java.util.List;
 public class ChatController {
 
     @Autowired
-    Assistant assistant;
+    OpenAiAssistant assistant;
+    @Autowired
+    GoogleAiAssistant googleAiAssistant;
+    @Autowired
+    GoogleAiStreamAssistant googleAiStreamAssistant;
 
     @GetMapping("/chat")
     public String model(@RequestParam(value = "message", defaultValue = "Hello") String message) {
@@ -45,5 +52,16 @@ public class ChatController {
         System.out.println("toolExecutions: " + toolExecutions);
         System.out.println("finishReason: " + finishReason);
         return JSONUtil.toJsonStr(outline);
+    }
+
+
+    @GetMapping("/chat3")
+    public String chat3(@RequestParam(value = "message", defaultValue = "Hello") String message) {
+        return googleAiAssistant.chat(message);
+    }
+
+    @GetMapping("/chat4")
+    public Flux<String> chat4(@RequestParam(value = "message", defaultValue = "Hello") String message) {
+        return googleAiStreamAssistant.fluxChat(message);
     }
 }
